@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ароматты көмірсутектер · виртуалды зертхана</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600&family=Fira+Sans+Condensed:wght@600;700&family=Fira+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky lab index on the left, one lab bench at a time on the right. Phones get the index as a scrolling strip. */
+:root{
+  --bg:#edf3f2; --surface:#ffffff; --surface2:#e3ecec; --ink:#12242b; --muted:#53686f; --line:#cbd8d7;
+  --accent:#0b7a85; --accent-ink:#ffffff; --accent-soft:#d3eef0;
+  --hazard:#c2410c; --hazard-soft:#fde8dc; --ok:#2b8a3e; --ok-soft:#dcf3e1; --bad:#c92a2a; --bad-soft:#fbe0e0;
+  --glass:#cfe8ee; --glassline:#5f8f9a; --water:#7fc4e0; --flame:#f08c00; --purple:#7a2a96; --bromine:#b4421a;
+  --font-body:'Fira Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-head:'Fira Sans Condensed','Fira Sans',system-ui,sans-serif;
+  --font-mono:'Fira Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1a1f; --surface:#15262d; --surface2:#1b3139; --ink:#e3eef0; --muted:#94a8af; --line:#294049;
+  --accent:#3cc3cf; --accent-ink:#06262a; --accent-soft:#123a40;
+  --hazard:#ff9a62; --hazard-soft:#3a2418; --ok:#63d27d; --ok-soft:#163a22; --bad:#ff7b7b; --bad-soft:#3d1a1a;
+  --glass:#274a55; --glassline:#6fa6b3; --water:#2f7894; --flame:#ffb02e; --purple:#b565d6; --bromine:#e0703f;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1a1f; --surface:#15262d; --surface2:#1b3139; --ink:#e3eef0; --muted:#94a8af; --line:#294049;
+  --accent:#3cc3cf; --accent-ink:#06262a; --accent-soft:#123a40;
+  --hazard:#ff9a62; --hazard-soft:#3a2418; --ok:#63d27d; --ok-soft:#163a22; --bad:#ff7b7b; --bad-soft:#3d1a1a;
+  --glass:#274a55; --glassline:#6fa6b3; --water:#2f7894; --flame:#ffb02e; --purple:#b565d6; --bromine:#e0703f;
+  color-scheme:dark}
+
+*{box-sizing:border-box}body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55;
+  padding-block:0 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input,select{font:inherit;color:inherit}
+sub,sup{line-height:0}
+.shell{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:270px minmax(0,1fr);gap:36px;padding-top:28px}
+.brand{font-family:var(--font-head);font-weight:700;font-size:22px;line-height:1.15;letter-spacing:.01em}
+.brand small{display:block;font-family:var(--font-body);font-weight:400;font-size:13px;color:var(--muted);margin-top:6px;letter-spacing:0}
+aside{min-width:0}
+.side{position:sticky;top:20px;display:flex;flex-direction:column;gap:18px}
+nav ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+nav a{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:9px 10px;border-radius:6px;text-decoration:none;color:var(--ink);border:1px solid transparent}
+nav a:hover{background:var(--surface2)}
+nav a[aria-current="true"]{background:var(--surface);border-color:var(--line);box-shadow:inset 3px 0 0 var(--accent)}
+nav .n{font-family:var(--font-head);font-weight:700;font-size:22px;color:var(--accent);line-height:1}
+nav .t{font-size:14.5px;line-height:1.25;min-width:0}
+nav .tick{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;color:transparent}
+nav .done .tick{background:var(--ok);border-color:var(--ok);color:#fff}
+.legend{font-size:12.5px;color:var(--muted)}
+main{min-width:0}
+.lab{display:flex;flex-direction:column;gap:22px}
+.lab[hidden]{display:none}
+.lab-head{display:flex;gap:18px;align-items:flex-start;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.lab-head .big{font-family:var(--font-head);font-weight:700;font-size:72px;line-height:.85;color:var(--accent)}
+.lab-head h2{margin:0;font-family:var(--font-head);font-weight:700;font-size:30px;line-height:1.15;text-wrap:balance}
+.lab-head p{margin:8px 0 0;color:var(--muted);max-width:62ch}
+.tag{display:inline-block;font-family:var(--font-mono);font-size:12px;border:1px solid var(--line);border-radius:4px;padding:1px 7px;color:var(--muted);margin-bottom:8px}
+h3{font-family:var(--font-head);font-weight:700;font-size:20px;margin:0 0 4px;text-wrap:balance}
+h4{font-family:var(--font-head);font-weight:600;font-size:16px;margin:0;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.card p{margin:0}
+.muted{color:var(--muted)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:8px 14px;cursor:pointer;font-weight:500}
+.btn:hover{background:var(--surface2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sel{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.eq{font-family:var(--font-mono);font-size:14.5px;background:var(--surface2);border-radius:6px;padding:10px 12px;overflow-x:auto;white-space:nowrap}
+.note{border-left:4px solid var(--hazard);background:var(--hazard-soft);padding:10px 14px;border-radius:0 6px 6px 0;font-size:15px}
+.note.info{border-color:var(--accent);background:var(--accent-soft)}
+.pill{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12.5px;font-weight:500;background:var(--surface2);color:var(--muted)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.warn{background:var(--hazard-soft);color:var(--hazard)}
+.simwrap{display:flex;flex-direction:column;gap:12px}
+.simwrap svg{width:100%;height:auto;max-height:420px;background:var(--surface2);border-radius:8px;display:block}
+.ctl{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.ctl label{display:flex;gap:8px;align-items:center;font-size:14.5px}
+.ctl input[type=range]{width:160px;accent-color:var(--accent)}
+.ctl select,.ctl input[type=number]{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 8px}
+.ctl input[type=number]{width:96px}
+output,.mono{font-family:var(--font-mono)}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.readout div{background:var(--surface2);border-radius:6px;padding:8px 12px}
+.readout b{display:block;font-family:var(--font-mono);font-size:20px;font-weight:500;font-variant-numeric:tabular-nums}
+.readout span{font-size:12.5px;color:var(--muted)}
+.msgs{display:flex;flex-direction:column;gap:6px;min-height:24px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--font-head);font-weight:600;letter-spacing:.03em;font-size:13px;text-transform:uppercase;color:var(--muted)}
+td.num,th.num{text-align:right}
+.hs{fill:transparent;stroke:transparent;cursor:pointer}
+.hs:hover{stroke:var(--accent);stroke-width:2;stroke-dasharray:5 4}
+.hs.found{fill:rgba(43,138,62,.18);stroke:var(--ok);stroke-width:2;stroke-dasharray:none}
+.list{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.list li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font-size:15px}
+.list li.on{background:var(--ok-soft);border-color:var(--ok)}
+.list li .dot{flex:none;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line);margin-top:2px}
+.list li.on .dot{background:var(--ok);border-color:var(--ok)}
+.q{display:flex;flex-direction:column;gap:8px;padding:14px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:0;padding-top:0}
+.q .qt{font-weight:500}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opts label{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:6px;cursor:pointer;font-size:15px}
+.opts label:hover{background:var(--surface2)}
+.opts input{margin-top:4px;accent-color:var(--accent)}
+.opts label.ok{background:var(--ok-soft);border-color:var(--ok)}
+.opts label.bad{background:var(--bad-soft);border-color:var(--bad)}
+.fb{font-size:14.5px;color:var(--muted);margin:0}
+.score{font-family:var(--font-head);font-weight:700;font-size:20px}
+details{border:1px solid var(--line);border-radius:6px;padding:10px 14px}
+details summary{cursor:pointer;font-weight:500}
+details[open] summary{margin-bottom:8px}
+.steps{counter-reset:s;list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.steps li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;padding:8px 10px;border:1px solid var(--line);border-radius:6px}
+.steps li::before{counter-increment:s;content:counter(s);font-family:var(--font-head);font-weight:700;color:var(--accent);font-size:20px;line-height:1.2}
+.steps li.cur{border-color:var(--accent);background:var(--accent-soft)}
+.steps li.done{opacity:.6}
+.bar{height:22px;border-radius:4px;background:var(--surface2);overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.legend-row{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13.5px}
+.legend-row span::before{content:"";display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:6px;background:var(--c);vertical-align:-1px}
+.flick{animation:flick .35s infinite alternate;transform-origin:50% 100%;transform-box:fill-box}
+@keyframes flick{from{transform:scaleY(.9) scaleX(1.03)}to{transform:scaleY(1.08) scaleX(.95)}}
+.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.drip{animation:drip .8s linear infinite}
+@keyframes drip{from{transform:translateY(0);opacity:1}to{transform:translateY(22px);opacity:.2}}
+.bub{animation:bub 1.4s ease-in infinite}
+@keyframes bub{from{transform:translateY(0);opacity:.7}to{transform:translateY(-40px);opacity:0}}
+.flow{stroke-dasharray:6 6;animation:flow 1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-12}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:16px;padding-top:max(14px,env(safe-area-inset-top,0px))}
+  .side{position:static}
+  nav ol{flex-direction:row;overflow-x:auto;padding-bottom:6px;gap:6px}
+  nav a{grid-template-columns:auto auto auto;flex:none;border-color:var(--line);background:var(--surface)}
+  nav .t{display:none}
+  nav .n{font-size:20px}
+  .legend{display:none}
+  .lab-head .big{font-size:48px}
+  .lab-head h2{font-size:24px}
+}
+
+.page{max-width:900px;margin:0 auto;padding-top:28px;display:flex;flex-direction:column;gap:28px}
+.top h1{font-family:var(--font-head);font-weight:700;font-size:34px;line-height:1.1;margin:0;text-wrap:balance}
+.top p{margin:10px 0 0;color:var(--muted);max-width:70ch}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.toc a{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:6px 12px;text-decoration:none;color:var(--ink);font-size:14.5px}
+.toc a:hover{background:var(--surface2)}
+.lab-head{border-top:1px solid var(--line);padding-top:22px;border-bottom:0;padding-bottom:0}
+@media (max-width:900px){.top h1{font-size:26px}}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="top"><span class="tag">№ 5–6 тақырып · Виртуалды зертханалық жұмыс</span><h1>Ароматты көмірсутектерге тән реакциялар</h1>
+<p>Бес тәжірибені өзің орындайсың: реагентті бөтелкеден пробиркаға құясың, тығынмен жабасың, моншаға саласың. Әр қадамда не болып жатқаны экранда көрінеді. Соңында теңдеулер мен сұрақтар бар.</p>
+<div class="toc"><a href="#lab3">1–2 тәжірибе</a><a href="#lab4">3–4 тәжірибе</a><a href="#lab5">5 тәжірибе және жаттығулар</a></div></header>
+<section class="lab" id="lab3">
+  <header class="lab-head"><div><span class="tag">№ 5–6 тақырып · 1 және 2 тәжірибе</span><h2>Бензолды алу және тотығуға қатысы</h2><p>Ароматты көмірсутектерге тән реакциялар. Алдымен бензолды натрий бензоатынан алып, содан соң бензол мен толуолды тотықтырғышпен салыстыр.</p></div></header>
+
+  <div class="card">
+    <div><h3>1-тәжірибе. Бензолдың натрий бензоатынан алынуы</h3></div>
+    <div class="eq">C<sub>6</sub>H<sub>5</sub>COONa + NaOH → C<sub>6</sub>H<sub>6</sub> + Na<sub>2</sub>CO<sub>3</sub> (t, натронды әк)</div>
+    <div class="grid2">
+      <ol class="steps" id="e1-steps">
+        <li>Келіде 1 г натрий бензоаты мен 2 г натронды әкті жақсылап ұнтақта.</li>
+        <li>Қоспаны құрғақ пробиркаға сал, иілген газ өткізгіш түтікті тығынмен жап.</li>
+        <li>Пробирканы тығынға қарай еңкейтіп штативке бекіт, түтік ұшын мұзды судағы қабылдағыш пробиркаға батыр.</li>
+        <li>Алдымен бүкіл пробирканы, содан соң қоспасы бар бөлігін қыздыр.</li>
+        <li>Дистиллятқа шыны таяқшаны батырып, жалынға апар.</li>
+      </ol>
+      <div class="simwrap">
+        <svg id="e1-svg" viewBox="0 0 680 280" role="img" aria-label="Бензол алу аспабы">
+          <g id="e1-mortar"><path d="M30 44 H110 Q110 88 70 88 Q30 88 30 44Z" fill="#b9b2a2" stroke="var(--glassline)" stroke-width="2"/><ellipse id="e1-mp" cx="70" cy="46" rx="32" ry="5" fill="#d8d2c4" opacity="0"/><g id="e1-pest"><line x1="70" y1="44" x2="98" y2="-2" stroke="#8a5a2b" stroke-width="8" stroke-linecap="round"/></g></g>
+          <text x="70" y="104" text-anchor="middle" font-size="11" fill="var(--muted)">келі</text>
+          <g id="e1-rod" opacity="0"><line x1="520" y1="122" x2="566" y2="56" stroke="#9aa" stroke-width="5" stroke-linecap="round"/><circle cx="520" cy="123" r="5" fill="#cfa84a"/></g>
+          <rect x="470" y="150" width="150" height="110" rx="6" fill="var(--water)" opacity=".45" stroke="var(--glassline)"/>
+          <g id="e1-ice" opacity="0"><rect x="480" y="156" width="20" height="14" fill="#fff" opacity=".7"/><rect x="580" y="162" width="22" height="14" fill="#fff" opacity=".7"/></g>
+          <rect x="522" y="110" width="30" height="130" rx="6" fill="var(--glass)" stroke="var(--glassline)" stroke-width="2"/>
+          <rect id="e1-liq" x="524" y="238" width="26" height="0" fill="#e8e0b0"/>
+          <path id="e1-gas" opacity="0" d="M284 128 L320 110 L420 110 L537 110 L537 128" fill="none" stroke="var(--glassline)" stroke-width="5" stroke-linejoin="round"/>
+          <circle id="e1-drip" class="drip" cx="537" cy="140" r="4" fill="#cfa84a" opacity="0"/>
+          <line x1="90" y1="205" x2="276" y2="140" stroke="var(--glassline)" stroke-width="36" stroke-linecap="round"/>
+          <line x1="90" y1="205" x2="276" y2="140" stroke="var(--glass)" stroke-width="30" stroke-linecap="round"/>
+          <line id="e1-pow" x1="86" y1="207" x2="130" y2="192" stroke="#d8d2c4" stroke-width="22" stroke-linecap="round" opacity="0"/>
+          <rect id="e1-cap" x="274" y="116" width="22" height="26" rx="3" fill="#8a5a2b" transform="rotate(-20 285 129)" opacity="0"/>
+          <ellipse id="e1-flame" class="flick" cx="110" cy="248" rx="14" ry="22" fill="var(--flame)" opacity="0"/>
+          <rect x="95" y="262" width="30" height="10" rx="2" fill="#555"/>
+          <text x="545" y="272" text-anchor="middle" font-size="12" fill="var(--muted)">мұзды су</text>
+          <g id="e1-spoon" transform="translate(70,60)"><line x1="0" y1="0" x2="40" y2="-18" stroke="#8a5a2b" stroke-width="4" stroke-linecap="round"/><ellipse id="e1-sp-pow" cx="-2" cy="1" rx="9" ry="4" fill="#d8d2c4" opacity="0"/></g>
+        </svg>
+        <div class="row">
+          <button class="btn" id="e1-b0" type="button">Ұнтақтау</button>
+          <button class="btn" id="e1-b1" type="button" disabled>Пробиркаға салу</button>
+          <button class="btn" id="e1-b2" type="button" disabled>Аспапты жинау</button>
+        </div>
+        <div class="ctl"><label for="e1-heat">Қыздыру <input type="range" id="e1-heat" min="0" max="100" value="0" disabled><output id="e1-heat-o">0</output></label>
+        <button class="btn" id="e1-b4" type="button" disabled>Таяқшаны жалынға апару</button></div>
+        <div class="readout"><div><b id="e1-ml">0.00</b><span>жиналған бензол, мл</span></div><div><b>0.62</b><span>теориялық мөлшер, мл</span></div></div>
+        <div class="msgs" id="e1-msg"></div>
+        <svg id="e1-fl" viewBox="0 0 300 120" role="img" aria-label="Бензолдың жануы" hidden style="background:var(--surface2);border-radius:8px;max-height:150px">
+          <path class="flick" d="M150 110 C110 90 118 50 150 10 C182 50 190 90 150 110z" fill="var(--flame)"/>
+          <path class="flick" d="M150 110 C130 96 134 72 150 48 C166 72 170 96 150 110z" fill="#ffe27a"/>
+          <circle cx="190" cy="22" r="7" fill="#333" opacity=".6"/><circle cx="205" cy="10" r="9" fill="#333" opacity=".45"/><circle cx="110" cy="18" r="6" fill="#333" opacity=".5"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div><h3>2-тәжірибе. Ароматты көмірсутектердің тотықтырғыштарға қатысы</h3><p class="muted">Екі пробиркаға 1 мл-ден бензол мен толуол құйылған. Әрқайсысына 1 мл 5 % KMnO<sub>4</sub> және 1 мл 10 % H<sub>2</sub>SO<sub>4</sub> қосылған, су моншасында қыздырылады.</p></div>
+    <div id="e2"></div>
+    <div class="eq">5C<sub>6</sub>H<sub>5</sub>CH<sub>3</sub> + 6KMnO<sub>4</sub> + 9H<sub>2</sub>SO<sub>4</sub> → 5C<sub>6</sub>H<sub>5</sub>COOH + 6MnSO<sub>4</sub> + 3K<sub>2</sub>SO<sub>4</sub> + 14H<sub>2</sub>O</div>
+  </div>
+
+  <div class="card"><div><h3>Сұрақтар</h3></div><div id="quiz3"></div></div>
+</section>
+<section class="lab" id="lab4">
+  <header class="lab-head"><div><span class="tag">№ 5–6 тақырып · 3 және 4 тәжірибе</span><h2>Бензолды бромдау және нитрлеу</h2><p>Екеуі де электрофильді орынбасу (S<sub>E</sub>) реакциясы. Катализатордың және температураның рөлін өзің көр.</p></div></header>
+
+  <div class="card">
+    <div><h3>3-тәжірибе. Бензолды бромдау</h3><span class="pill warn" style="align-self:flex-start">Тартпа шкаф!</span>
+    <p class="muted" style="margin-top:8px">Екі пробиркада 1 мл бензол мен 1 мл бромның CCl<sub>4</sub>-тегі ерітіндісі бар. Біреуіне шпатель ұшымен темір ұнтағы салынған. Ауа мұздатқышы бар тығынмен жабылып, жылы су моншасында қыздырылады.</p></div>
+    <div id="e3"></div>
+    <div class="eq">2Fe + 3Br<sub>2</sub> → 2FeBr<sub>3</sub></div>
+    <div class="eq">Br<sub>2</sub> + FeBr<sub>3</sub> → Br<sup>+</sup>[FeBr<sub>4</sub>]<sup>−</sup></div>
+    <div class="eq">C<sub>6</sub>H<sub>6</sub> + Br<sub>2</sub> → C<sub>6</sub>H<sub>5</sub>Br + HBr (FeBr<sub>3</sub>)</div>
+  </div>
+
+  <div class="card">
+    <div><h3>4-тәжірибе. Бензолды нитрлеу</h3><p class="muted">1 мл конц. HNO<sub>3</sub> және 1,5 мл конц. H<sub>2</sub>SO<sub>4</sub> нитрлеуші қоспасына 1 мл бензолды аз-аздап қос. Қоспаны мұзбен суытып отыр. Содан кейін 50–55 °C су моншасында 5–10 минут қыздыр.</p></div>
+    <div id="n"></div>
+    <div class="eq">HNO<sub>3</sub> + 2H<sub>2</sub>SO<sub>4</sub> ⇌ NO<sub>2</sub><sup>+</sup> + H<sub>3</sub>O<sup>+</sup> + 2HSO<sub>4</sub><sup>−</sup></div>
+    <div class="eq">C<sub>6</sub>H<sub>6</sub> + NO<sub>2</sub><sup>+</sup> → [σ-комплекс] → C<sub>6</sub>H<sub>5</sub>NO<sub>2</sub> + H<sup>+</sup></div>
+    <div class="note info">Күкірт қышқылының рөлі: азот қышқылынан нитроний катионын (NO<sub>2</sub><sup>+</sup>) түзуге көмектеседі және реакцияда бөлінген суды байланыстырады.</div>
+  </div>
+
+  <div class="card"><div><h3>Сұрақтар</h3></div><div id="quiz4"></div></div>
+</section>
+<section class="lab" id="lab5">
+  <header class="lab-head"><div><span class="tag">№ 5–6 тақырып · 5 тәжірибе және жаттығулар</span><h2>Бензол мен толуолды сульфирлеу</h2><p>Алкил радикалы сақинаның реакцияласу жылдамдығына қалай әсер ететінін уақыт өте байқа.</p></div></header>
+
+  <div class="card">
+    <div><h3>5-тәжірибе</h3><p class="muted">Екі пробиркаға 0,5 мл-ден бензол және толуол құйылып, 2 мл-ден күкірт қышқылы қосылған. Қайнап тұрған су моншасында 10–15 минут үздіксіз араластырылады.</p></div>
+    <div id="e5"></div>
+    <div class="eq">C<sub>6</sub>H<sub>5</sub>CH<sub>3</sub> + H<sub>2</sub>SO<sub>4</sub> → CH<sub>3</sub>C<sub>6</sub>H<sub>4</sub>SO<sub>3</sub>H (о-, п-) + H<sub>2</sub>O</div>
+    <p class="muted">Метил тобы сақинаға электрон тығыздығын береді. Сондықтан сақина электрофилге (SO<sub>3</sub> немесе HSO<sub>3</sub><sup>+</sup>) бензолдағыдан белсенділеу, ал орынбасу о- және п-орындарға бағытталады.</p>
+  </div>
+
+  <div class="card">
+    <div><h3>Бақылау сұрақтары мен жаттығулар</h3><p class="muted">Құжаттағы жаттығулардың жауабы бар бөлігі. Алдымен өзің жазып көр, содан кейін ашып тексер.</p></div>
+    <details><summary>1. C<sub>8</sub>H<sub>10</sub> және C<sub>9</sub>H<sub>12</sub> ароматты изомерлері</summary>
+      <p><b>C<sub>8</sub>H<sub>10</sub>:</b> этилбензол, о-ксилол, м-ксилол, п-ксилол (4 изомер).</p>
+      <p><b>C<sub>9</sub>H<sub>12</sub>:</b> пропилбензол, изопропилбензол (кумол), о-, м-, п-этилтолуол, 1,2,3-триметилбензол, 1,2,4-триметилбензол, 1,3,5-триметилбензол (8 изомер).</p></details>
+    <details><summary>2. Құрылымдық формулалар</summary>
+      <p>Этилбензол: C<sub>6</sub>H<sub>5</sub>–CH<sub>2</sub>–CH<sub>3</sub>. Фенилацетилен: C<sub>6</sub>H<sub>5</sub>–C≡CH. Винилбензол (стирол): C<sub>6</sub>H<sub>5</sub>–CH=CH<sub>2</sub>.</p></details>
+    <details><summary>6. Бензолдың озонмен реакциясы</summary>
+      <p>Бензол үш молекула озонмен әрекеттесіп триозонид түзеді. Ол суда ыдырап үш молекула глиоксаль береді.</p>
+      <div class="eq">C<sub>6</sub>H<sub>6</sub> + 3O<sub>3</sub> → C<sub>6</sub>H<sub>6</sub>(O<sub>3</sub>)<sub>3</sub> → 3 OHC–CHO</div></details>
+    <details><summary>7. Сәйкес және сәйкес емес орынбасушылар</summary>
+      <p><b>Бірінші текті (сәйкес) орынбасушылар</b> электрон тығыздығын сақинаға береді (–CH<sub>3</sub>, –OH, –NH<sub>2</sub>, –Cl). Олар келесі орынбасушыны о- және п-орынға бағыттайды. Мысалы, толуолды нитрлесе о- және п-нитротолуол түзіледі.</p>
+      <p><b>Екінші текті (сәйкес емес) орынбасушылар</b> электрон тығыздығын тартады (–NO<sub>2</sub>, –SO<sub>3</sub>H, –COOH). Олар келесі орынбасушыны м-орынға бағыттайды. Мысалы, нитробензолды нитрлесе м-динитробензол түзіледі.</p></details>
+  </div>
+
+  <div class="card"><div><h3>Сұрақтар</h3></div><div id="quiz5"></div></div>
+</section>
+</div>
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+function clamp(x,a,b){return Math.max(a,Math.min(b,x))}
+function fmt(x,d){return Number(x).toFixed(d)}
+
+
+var done={};function renderNav(){}
+/* ---------- quiz engine ---------- */
+function quiz(rootId,labNo,items){
+  var root=$('#'+rootId); var html='';
+  items.forEach(function(it,i){
+    html+='<div class="q" data-i="'+i+'"><p class="qt">'+(i+1)+'. '+it.q+'</p><div class="opts">';
+    it.o.forEach(function(o,j){html+='<label for="'+rootId+'-'+i+'-'+j+'"><input type="radio" name="'+rootId+'-'+i+'" id="'+rootId+'-'+i+'-'+j+'" value="'+j+'"><span>'+o+'</span></label>'});
+    html+='</div><p class="fb" hidden></p></div>';
+  });
+  html+='<div class="row" style="margin-top:6px"><button class="btn primary" type="button" id="'+rootId+'-chk">Тексеру</button><button class="btn" type="button" id="'+rootId+'-rst">Қайта</button><span class="score" id="'+rootId+'-sc"></span></div>';
+  root.innerHTML=html;
+  $('#'+rootId+'-chk').onclick=function(){
+    var ok=0, ans=0;
+    $$('.q',root).forEach(function(q,i){
+      var sel=$('input:checked',q); var fb=$('.fb',q);
+      $$('label',q).forEach(function(l){l.classList.remove('ok','bad')});
+      if(!sel){fb.hidden=false;fb.textContent='Жауап таңдалмады.';return}
+      ans++;
+      var v=+sel.value, labs=$$('label',q);
+      if(v===items[i].a){ok++;labs[v].classList.add('ok');fb.textContent='Дұрыс. '+items[i].w}
+      else{labs[v].classList.add('bad');labs[items[i].a].classList.add('ok');fb.textContent='Дұрыс жауап басқа. '+items[i].w}
+      fb.hidden=false;
+    });
+    $('#'+rootId+'-sc').textContent=ok+' / '+items.length;
+    if(ok===items.length&&!done[labNo]){done[labNo]=true;var m=/^#lab([1-7])$/.exec(location.hash);renderNav(m?m[1]:'1')}
+  };
+  $('#'+rootId+'-rst').onclick=function(){
+    $$('input',root).forEach(function(x){x.checked=false});
+    $$('label',root).forEach(function(l){l.classList.remove('ok','bad')});
+    $$('.fb',root).forEach(function(f){f.hidden=true});
+    $('#'+rootId+'-sc').textContent='';
+  };
+}
+
+/* ---------- animation helpers ---------- */
+function anim(ms,fn){return new Promise(function(res){var t0=null;function f(ts){if(t0===null)t0=ts;var p=Math.min(1,(ts-t0)/ms);fn(p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2);if(p<1)requestAnimationFrame(f);else res()}requestAnimationFrame(f)})}
+function lerp(a,b,p){return a+(b-a)*p}
+function mixc(a,b,p){return 'rgb('+[0,1,2].map(function(i){return Math.round(lerp(a[i],b[i],p))}).join(',')+')'}
+
+/* ---------- bench scene: bottles, tubes, bath, beaker ---------- */
+var sceneN=0;
+function scene(rootId,cfg){
+  var root=$('#'+rootId),id='sc'+(++sceneN),nT=cfg.tubes.length,TY0=100,TY1=170;
+  var tx=cfg.tubes.map(function(_,i){return nT===1?450:405+i*125});
+  var S;
+  function fresh(){
+    S={prog:cfg.tubes.map(function(){return {}}),pose:tx.map(function(x){return {x:x,y:TY0,r:0}}),out:cfg.tubes.map(function(){return 0}),
+       stop:cfg.tubes.map(function(){return 0}),t:0,busy:false,step:0,mode:null,playing:false,bp:{},q:null,msg:cfg.intro||''};
+    cfg.bottles.forEach(function(b,i){S.bp[b.id]={x:36+i*68,y:22,r:0}});
+  }
+  fresh();
+  var h='<div class="simwrap"><svg id="'+id+'" viewBox="0 0 700 390" role="img" aria-label="'+cfg.aria+'" style="max-height:480px"><defs>';
+  cfg.tubes.forEach(function(_,i){h+='<clipPath id="'+id+'c'+i+'"><path d="M-27 0 v140 a27 27 0 0 0 54 0 v-140 z"/></clipPath>'});
+  h+='<clipPath id="'+id+'bk"><rect x="607" y="262" width="66" height="76"/></clipPath></defs>';
+  h+='<rect x="14" y="84" width="'+(cfg.bottles.length*68+10)+'" height="5" rx="2" fill="var(--glassline)" opacity=".6"/>';
+  h+='<rect id="'+id+'bath" x="338" y="300" width="250" height="56" rx="6" fill="var(--water)" opacity=".55" stroke="var(--glassline)" stroke-width="2"/>';
+  h+='<g id="'+id+'ice"></g><g id="'+id+'bub"></g><ellipse id="'+id+'fl" class="flick" cx="590" cy="372" rx="14" ry="16" fill="var(--flame)" opacity="0"/><rect x="575" y="372" width="30" height="8" rx="2" fill="#555"/>';
+  if(cfg.beaker){
+    h+='<path d="M604 252 v86 a4 4 0 0 0 4 4 h64 a4 4 0 0 0 4-4 v-86" fill="var(--glass)" fill-opacity=".35" stroke="var(--glassline)" stroke-width="2"/><g id="'+id+'bkL" clip-path="url(#'+id+'bk)"></g><text x="640" y="362" text-anchor="middle" font-size="12" fill="var(--muted)">'+cfg.beaker.name+'</text>';
+  }
+  cfg.tubes.forEach(function(t,i){
+    h+='<g id="'+id+'T'+i+'"><path d="M-27 0 v140 a27 27 0 0 0 54 0 v-140" fill="var(--glass)" fill-opacity=".45" stroke="var(--glassline)" stroke-width="2.5"/><g id="'+id+'L'+i+'" clip-path="url(#'+id+'c'+i+')"></g>';
+    h+='<g id="'+id+'S'+i+'" opacity="0"><rect x="-22" y="-14" width="44" height="16" rx="3" fill="#8a5a2b"/><path d="M0 -14 v-18 h20" fill="none" stroke="var(--glassline)" stroke-width="4" stroke-linejoin="round"/></g>';
+    if(cfg.litmus)h+='<rect id="'+id+'P'+i+'" x="34" y="-8" width="9" height="42" fill="#4a6fd1" stroke="var(--glassline)" opacity="0"/>';
+    h+='</g><text x="'+tx[i]+'" y="384" text-anchor="middle" font-size="12" fill="var(--ink)" id="'+id+'N'+i+'">'+t.name+'</text>';
+  });
+  cfg.bottles.forEach(function(b){
+    h+='<g id="'+id+'B'+b.id+'"><rect x="-6" y="0" width="12" height="12" fill="var(--glass)" stroke="var(--glassline)"/><rect x="-22" y="10" width="44" height="52" rx="6" fill="var(--glass)" stroke="var(--glassline)" stroke-width="2"/><rect x="-20" y="30" width="40" height="30" rx="3" fill="'+b.c+'" opacity=".9"/><rect x="-18" y="-3" width="36" height="6" rx="2" fill="#555" opacity="0"/>';
+    h+='<text x="0" y="48" text-anchor="middle" font-size="9.5" font-weight="600" fill="#12242b">'+b.label+'</text></g>';
+  });
+  h+='<line id="'+id+'st" x1="0" y1="0" x2="0" y2="0" stroke="#999" stroke-width="3" stroke-linecap="round" opacity="0"/>';
+  h+='</svg><div class="row"><button class="btn primary" id="'+id+'go" type="button"></button><button class="btn" id="'+id+'rs" type="button">Басынан бастау</button></div>';
+  h+='<ol class="steps" id="'+id+'ol"></ol>';
+  if(cfg.extra)h+=cfg.extra(id);
+  h+='<div class="ctl" id="'+id+'hc" hidden><label for="'+id+'t">'+cfg.heat.label+' <input type="range" id="'+id+'t" min="0" max="'+cfg.heat.max+'" step="0.1" value="0"><output id="'+id+'o">0 мин</output></label><button class="btn" id="'+id+'pl" type="button">Қыздыруды бастау</button></div>';
+  h+='<div class="note info" id="'+id+'n"></div></div>';
+  root.innerHTML=h;
+  var svg=$('#'+id);
+  function G(s){return $('#'+id+s)}
+
+  function layersOf(i){return cfg.layers(i,S.t,S)}
+  function render(){
+    cfg.tubes.forEach(function(_,i){
+      var p=S.pose[i];G('T'+i).setAttribute('transform','translate('+p.x+','+p.y+') rotate('+p.r+')');
+      var y=166,s='',L=layersOf(i),top=0;
+      L.forEach(function(l){var pr=(S.prog[i][l.key]||0)*(1-S.out[i]);if(l.always)pr=1*(1-S.out[i]);var hh=l.h*pr;y-=hh;top+=hh;if(hh>0.2)s+='<rect x="-28" y="'+y+'" width="56" height="'+(hh+1)+'" fill="'+l.c+'" opacity="'+l.o+'"/>'});
+      G('L'+i).innerHTML=s;S['top'+i]=top;
+      var st=G('S'+i);st.setAttribute('opacity',S.stop[i]);st.setAttribute('transform','translate(0,'+(-26*(1-S.stop[i]))+')');
+      if(cfg.litmus){var pp=G('P'+i);pp.setAttribute('opacity',S.stop[i]>.9?1:0);pp.setAttribute('fill',cfg.litmus(S.t,i,S)?'#d64545':'#4a6fd1')}
+    });
+    cfg.bottles.forEach(function(b){var p=S.bp[b.id];G('B'+b.id).setAttribute('transform','translate('+p.x+','+p.y+') rotate('+p.r+')')});
+    var bubs='';if(S.mode&&S.mode!=='ice'&&(S.t>0||S.playing)){for(var k=0;k<7;k++)bubs+='<circle class="bub" style="animation-delay:'+(k*.2)+'s" cx="'+(350+k*36)+'" cy="346" r="3" fill="#fff"/>'}
+    G('bub').innerHTML=bubs;
+    G('fl').setAttribute('opacity',(S.mode&&S.mode!=='ice'&&(S.t>0||S.playing))?1:0);
+    G('bath').setAttribute('fill',S.mode==='ice'?'#b9e4f5':'var(--water)');
+    var ice='';if(S.mode==='ice'){[[350,306],[392,312],[436,304],[480,312],[524,306],[560,312]].forEach(function(c){ice+='<rect x="'+c[0]+'" y="'+c[1]+'" width="16" height="14" rx="2" fill="#fff" opacity=".85"/>'})}
+    G('ice').innerHTML=ice;
+    if(cfg.beaker){var y2=338,bs='';cfg.beaker.layers(S).forEach(function(l){var hh=l.h;y2-=hh;if(hh>0.2)bs+='<rect x="607" y="'+y2+'" width="66" height="'+(hh+1)+'" fill="'+l.c+'" opacity="'+l.o+'"/>'});G('bkL').innerHTML=bs}
+    G('o').textContent=S.t.toFixed(1)+' мин';
+    G('n').innerHTML=(S.t>0&&!S.fin&&cfg.heat.msg?cfg.heat.msg(S.t,S):S.msg);
+    var li=$$('#'+id+'ol li');li.forEach(function(x,i){x.className=i<S.step?'done':i===S.step?'cur':''});
+    var go=G('go'),stp=cfg.steps[S.step];
+    if(!stp){go.textContent='Тәжірибе аяқталды';go.disabled=true}
+    else{go.textContent='Келесі әрекет: '+stp.label;var need=stp.needHeat&&S.t<stp.needHeat;go.disabled=S.busy||need;if(need&&!S.busy)go.textContent='Алдымен қыздыруды '+stp.needHeat+' минутқа дейін жалғастыр'}
+    G('hc').hidden=!(S.mode&&S.mode!=='ice');
+    G('t').disabled=S.busy;G('pl').disabled=S.busy;
+  }
+  function stream(x1,y1,x2,y2,c,solid,on){var s=G('st');s.setAttribute('x1',x1);s.setAttribute('y1',y1);s.setAttribute('x2',x2);s.setAttribute('y2',y2);s.setAttribute('stroke',c);s.setAttribute('stroke-dasharray',solid?'2 5':'none');s.setAttribute('opacity',on?1:0)}
+  function moveBottle(b,to,ms){var f=S.bp[b.id],a={x:f.x,y:f.y,r:f.r};return anim(ms,function(p){S.bp[b.id]={x:lerp(a.x,to.x,p),y:lerp(a.y,to.y,p),r:lerp(a.r,to.r,p)};render()})}
+  async function doPour(stp){
+    var b=cfg.bottles.filter(function(x){return x.id===stp.bottle})[0],home={x:36+cfg.bottles.indexOf(b)*68,y:22,r:0};
+    for(var k=0;k<stp.tubes.length;k++){
+      var ti=stp.tubes[k],mx=tx[ti]+10;
+      await moveBottle(b,{x:mx,y:90,r:-128},650);
+      var from=stp.from||0,to=stp.to===undefined?1:stp.to;
+      await anim(1100,function(p){S.prog[ti][stp.key]=lerp(from,to,p);render();stream(mx-2,96,mx-2,TY0+166-(S['top'+ti]||0),b.c,b.solid,true)});
+      stream(0,0,0,0,'#000',false,false);
+    }
+    await moveBottle(b,home,650);
+  }
+  async function doStopper(){for(var i=0;i<nT;i++){}await anim(900,function(p){for(var i=0;i<nT;i++)S.stop[i]=p;render()})}
+  async function doBath(stp){
+    var from=S.pose[0].y;
+    if(from>TY0+1){await anim(500,function(p){S.pose.forEach(function(o){o.y=lerp(from,TY0,p)});render()})}
+    S.mode=stp.mode;if(stp.onBath)stp.onBath(S,id);
+    await anim(900,function(p){S.pose.forEach(function(o){o.y=lerp(TY0,TY1,p)});render()});
+  }
+  async function doBeaker(stp){
+    for(var k=0;k<stp.tubes.length;k++){
+      var ti=stp.tubes[k],a=S.pose[ti],start={x:a.x,y:a.y,r:a.r},home={x:tx[ti],y:TY1,r:0};
+      await anim(800,function(p){S.pose[ti]={x:lerp(start.x,632,p),y:lerp(start.y,236,p),r:lerp(start.r,102,p)};render()});
+      await anim(1300,function(p){S.out[ti]=p;render();stream(626,246,626,336-(cfg.beaker.top?cfg.beaker.top(S):20),'#c9a03a',false,p<.95)});
+      stream(0,0,0,0,'#000',false,false);
+      await anim(700,function(p){S.pose[ti]={x:lerp(632,home.x,p),y:lerp(236,home.y,p),r:lerp(102,0,p)};render()});
+    }
+  }
+  var busy=false;
+  G('go').onclick=async function(){
+    var stp=cfg.steps[S.step];if(!stp||S.busy)return;
+    S.busy=true;render();
+    if(stp.type==='pour')await doPour(stp);
+    else if(stp.type==='stopper')await doStopper(stp);
+    else if(stp.type==='bath')await doBath(stp);
+    else if(stp.type==='beaker')await doBeaker(stp);
+    S.msg=stp.msg||'';if(stp.type==='beaker')S.fin=true;S.step++;S.busy=false;render();
+  };
+  G('rs').onclick=function(){S.playing=false;clearInterval(S.iv);fresh();G('t').value=0;G('pl').textContent='Қыздыруды бастау';if(cfg.onReset)cfg.onReset(id);ol();render()};
+  function ol(){$('#'+id+'ol').innerHTML=cfg.steps.map(function(s){return '<li>'+s.label+'</li>'}).join('')}
+  ol();
+  G('t').oninput=function(){S.t=+this.value;S.playing=false;render()};
+  G('pl').onclick=function(){
+    if(S.playing){S.playing=false;clearInterval(S.iv);G('pl').textContent='Қыздыруды жалғастыру';render();return}
+    if(S.t>=cfg.heat.max)S.t=0;S.playing=true;G('pl').textContent='Үзіліс';
+    S.iv=setInterval(function(){S.t=Math.min(cfg.heat.max,S.t+cfg.heat.max/80);G('t').value=S.t;if(S.t>=cfg.heat.max){S.playing=false;clearInterval(S.iv);G('pl').textContent='Қайта қыздыру'}render()},100);
+  };
+  render();
+  return {S:function(){return S},id:id,render:render};
+}
+/* ======================= 1-тәжірибе: анимация ======================= */
+(function(){
+var ste=0,collected=0,t=null;
+function steps(n){$$('#e1-steps li').forEach(function(li,i){li.className=i<n?'done':i===n?'cur':''})}
+steps(0);
+function msg(s){$('#e1-msg').innerHTML=s?'<span class="pill ok" style="padding:4px 10px;border-radius:6px">'+s+'</span>':''}
+$('#e1-b0').onclick=async function(){
+  var b=this;b.disabled=true;
+  await anim(1800,function(p){$('#e1-pest').setAttribute('transform','rotate('+(Math.sin(p*22)*16)+' 70 44)');$('#e1-mp').setAttribute('opacity',Math.min(1,p*2))});
+  $('#e1-pest').setAttribute('transform','rotate(0 70 44)');
+  ste=1;$('#e1-b1').disabled=false;steps(1);msg('1 г натрий бензоаты мен 2 г натронды әк келіде ұнтақталды.');
+};
+$('#e1-b1').onclick=async function(){
+  var b=this;b.disabled=true;var sp=$('#e1-spoon');$('#e1-sp-pow').setAttribute('opacity',1);
+  await anim(900,function(p){sp.setAttribute('transform','translate('+lerp(70,236,p)+','+lerp(60,92,p)+') rotate('+lerp(0,-10,p)+')')});
+  await anim(900,function(p){sp.setAttribute('transform','translate(236,92) rotate('+lerp(-10,-32,p)+')');$('#e1-sp-pow').setAttribute('opacity',1-p);$('#e1-mp').setAttribute('opacity',1-p*.8);$('#e1-pow').setAttribute('opacity',p)});
+  await anim(700,function(p){sp.setAttribute('transform','translate('+lerp(236,70,p)+','+lerp(92,60,p)+') rotate('+lerp(-32,0,p)+')')});
+  ste=2;$('#e1-b2').disabled=false;steps(2);msg('Қоспа құрғақ пробиркаға салынды.');
+};
+$('#e1-b2').onclick=async function(){
+  this.disabled=true;
+  await anim(900,function(p){$('#e1-cap').setAttribute('opacity',p);$('#e1-ice').setAttribute('opacity',p);$('#e1-gas').setAttribute('opacity',p)});
+  ste=3;$('#e1-heat').disabled=false;steps(3);msg('Газ өткізгіш түтік мұзды судағы қабылдағышқа батырылды. Қыздыруды бастай бер.');
+};
+$('#e1-heat').oninput=function(){
+  var v=+this.value;$('#e1-heat-o').textContent=v;$('#e1-flame').setAttribute('opacity',v>0?.3+v/150:0);
+  $('#e1-flame').setAttribute('ry',10+v/6);
+  if(v>0&&!t){t=setInterval(function(){
+    var h=+$('#e1-heat').value;if(h<35||collected>=.62)return;
+    collected=Math.min(.62,collected+(h-30)/100*.03);
+    var px=collected/.62*100;$('#e1-liq').setAttribute('y',238-px);$('#e1-liq').setAttribute('height',px);
+    $('#e1-ml').textContent=fmt(collected,2);$('#e1-drip').setAttribute('opacity',1);
+    if(collected>.3){$('#e1-b4').disabled=false;steps(4)}
+    if(collected>=.62)$('#e1-drip').setAttribute('opacity',0);
+  },100)}
+  if(v<35)$('#e1-drip').setAttribute('opacity',0);
+  if(v>85)msg('Тым қатты қыздырылды, пробирканы абайла.');
+};
+$('#e1-b4').onclick=async function(){
+  var r=$('#e1-rod');r.setAttribute('opacity',1);
+  await anim(1300,function(p){r.setAttribute('transform','translate('+lerp(0,-405,p)+','+lerp(0,122,p)+')')});
+  $('#e1-fl').hidden=false;msg('Бензол күйе бөле отырып, жарық жалынмен жанады.');
+  $$('#e1-steps li').forEach(function(l){l.className='done'});
+};
+})();
+
+/* ======================= 2-тәжірибе ======================= */
+var AQ='#7a2a96';
+scene('e2',{aria:'Бензол мен толуолды тотықтыру: реагенттерді құю',
+ tubes:[{name:'1 · бензол'},{name:'2 · толуол'}],
+ bottles:[{id:'ben',label:'Бензол',c:'#e8e0b0'},{id:'tol',label:'Толуол',c:'#ecdca0'},{id:'kmn',label:'KMnO₄ 5%',c:AQ},{id:'h2',label:'H₂SO₄ 10%',c:'#d9d0a0'}],
+ intro:'Сөреде реагенттер тұр. «Келесі әрекет» батырмасын басып, тәжірибені қадамдап орында.',
+ steps:[
+  {label:'1 мл бензолды 1-пробиркаға құю',type:'pour',bottle:'ben',tubes:[0],key:'org',msg:'Бензол 1-пробиркаға құйылды.'},
+  {label:'1 мл толуолды 2-пробиркаға құю',type:'pour',bottle:'tol',tubes:[1],key:'org',msg:'Толуол 2-пробиркаға құйылды.'},
+  {label:'1 мл 5 % KMnO₄ ерітіндісін екі пробиркаға құю',type:'pour',bottle:'kmn',tubes:[0,1],key:'kmn',msg:'Екі пробиркаға да күлгін KMnO₄ ерітіндісі құйылды. Ол органикалық қабаттың астына орналасты.'},
+  {label:'1 мл 10 % H₂SO₄ ерітіндісін екі пробиркаға құю',type:'pour',bottle:'h2',tubes:[0,1],key:'h2',msg:'Қышқыл ортасы жасалды.'},
+  {label:'Пробиркаларды газ өткізгіш түтікті тығындармен жабу',type:'stopper',msg:'Пробиркалар тығындармен жабылды.'},
+  {label:'Пробиркаларды су моншасына салып қыздыру',type:'bath',mode:'warm',msg:'Пробиркалар моншада. Төмендегі жүгірткімен қыздыру уақытын жылжыт немесе «Қыздыруды бастау» батырмасын бас.'}],
+ heat:{max:10,label:'Қыздыру уақыты',msg:function(t){return t<1?'Қыздыру басталды.':t<8?'Толуол бар 2-пробиркада күлгін түс солғындап келеді. Бензол бар 1-пробиркада өзгеріс жоқ.':'Толуол бар пробиркада KMnO₄ түссізденді (толуол бензой қышқылына дейін тотықты). Бензол бар пробиркада ешқандай өзгеріс жоқ.'}},
+ layers:function(i,t){var f=i===1?clamp(t/8,0,1):0,o=.9*(1-.97*f);return [{key:'kmn',c:AQ,o:o,h:44},{key:'h2',c:AQ,o:o*.85,h:22},{key:'org',c:i===0?'#e8e0b0':'#ecdca0',o:.92,h:i===1?26-10*f:26}]}
+});
+
+/* ======================= 3-тәжірибе: бромдау ======================= */
+var BR='#b4421a';
+scene('e3',{aria:'Бензолды бромдау: реагенттерді құю',
+ tubes:[{name:'1 · Fe жоқ'},{name:'2 · Fe бар'}],litmus:function(t,i){return i===1&&t>=2},
+ bottles:[{id:'ben',label:'Бензол',c:'#e8e0b0'},{id:'br',label:'Br₂/CCl₄',c:BR},{id:'fe',label:'Fe ұнтақ',c:'#555',solid:true}],
+ intro:'Тартпа шкафта жұмыс істе. Реагенттер сөреде тұр.',
+ steps:[
+  {label:'1 мл бензолды екі пробиркаға құю',type:'pour',bottle:'ben',tubes:[0,1],key:'ben',msg:'Екі пробиркаға бензол құйылды.'},
+  {label:'1 мл Br₂-ның CCl₄-тегі ерітіндісін екі пробиркаға құю',type:'pour',bottle:'br',tubes:[0,1],key:'br',msg:'Екі пробирка да бромның қызыл-қоңыр түсін алды.'},
+  {label:'2-пробиркаға шпатель ұшымен темір ұнтағын салу',type:'pour',bottle:'fe',tubes:[1],key:'fe',msg:'Темір ұнтағы 2-пробиркаға салынды.'},
+  {label:'Пробиркаларды ауа мұздатқышы бар тығындармен жабу',type:'stopper',msg:'Пробиркалар жабылды, түтік ұшына көк лакмус қағазы апарылды.'},
+  {label:'Пробиркаларды жылы су моншасына салу',type:'bath',mode:'warm',msg:'Пробиркалар жылы моншада. Қыздыру уақытын жылжыт.'}],
+ heat:{max:10,label:'Қыздыру уақыты',msg:function(t){return t<2?'Екі пробиркада да бромның қызыл-қоңыр түсі бар.':t<7?'Темір ұнтағы бар пробиркада түс солғындап, лакмус қағазы қызарып келеді.':'Темір бар пробиркада қоспа түссізденді, лакмус қызарды (HBr бөлінді). Темірсіз пробиркада реакция жүрмейді.'}},
+ layers:function(i,t){var f=i===1?clamp((t-1)/6,0,1):0,k=1-.95*f,L=[];if(i===1)L.push({key:'fe',c:'#444',o:1,h:6});L.push({key:'br',c:BR,o:.88*k,h:50});L.push({key:'ben',c:BR,o:.38*k,h:28});return L}
+});
+
+/* ======================= 4-тәжірибе: нитрлеу ======================= */
+var NQ=function(v){return v<40?'low':v<=58?'good':'high'};
+var nsc=scene('n',{aria:'Бензолды нитрлеу: реагенттерді құю',
+ tubes:[{name:'нитрлеуші қоспа'}],
+ bottles:[{id:'hno3',label:'HNO₃ конц.',c:'#e8d870'},{id:'h2',label:'H₂SO₄ конц.',c:'#d8c890'},{id:'ben',label:'Бензол',c:'#e8e0b0'}],
+ intro:'Нитрлеуші қоспаны дайындаудан баста.',onReset:function(id){$('#'+id+'bt').disabled=false},
+ extra:function(id){return '<div class="ctl"><label for="'+id+'bt">Су моншасының температурасы (соңғы қадамға дейін таңда) <input type="range" id="'+id+'bt" min="30" max="80" value="52"><output id="'+id+'bo">52 °C</output></label></div>'},
+ steps:[
+  {label:'1 мл концентрлі HNO₃ құю',type:'pour',bottle:'hno3',tubes:[0],key:'hno3',msg:'Пробиркаға азот қышқылы құйылды.'},
+  {label:'1,5 мл концентрлі H₂SO₄ құю',type:'pour',bottle:'h2',tubes:[0],key:'h2',msg:'Нитрлеуші қоспа дайын. Енді оны суыту керек.'},
+  {label:'Нитрлеуші қоспаны мұзды суға салып суыту',type:'bath',mode:'ice',msg:'Қоспа мұзды суда суытылуда. Бензолды аз-аздап қос.'},
+  {label:'Бензолды аз-аздап қосу (1/4)',type:'pour',bottle:'ben',tubes:[0],key:'ben',from:0,to:.25,msg:'Бензол қосылды, қоспаны суытып отыр.'},
+  {label:'Бензолды аз-аздап қосу (2/4)',type:'pour',bottle:'ben',tubes:[0],key:'ben',from:.25,to:.5,msg:'Тағы бір бөлік қосылды.'},
+  {label:'Бензолды аз-аздап қосу (3/4)',type:'pour',bottle:'ben',tubes:[0],key:'ben',from:.5,to:.75,msg:'Үшінші бөлік қосылды.'},
+  {label:'Бензолды аз-аздап қосу (4/4), барлығы 1 мл',type:'pour',bottle:'ben',tubes:[0],key:'ben',from:.75,to:1,msg:'1 мл бензол толық қосылды.'},
+  {label:'Пробирканы ауа мұздатқышы бар тығынмен жауып, су моншасына салу',type:'bath',mode:'warm',onBath:function(S,id){S.q=NQ(+$('#'+id+'bt').value);$('#'+id+'bt').disabled=true},msg:'Пробирка моншада. Үздіксіз шайқай отырып 5–10 минут қыздыр.'},
+  {label:'Реакция қоспасын суық суы бар стақанға құю',type:'beaker',tubes:[0],needHeat:10,msg:'Минералды қышқылдардың артығы суда ерідi, ал нитробензол ащы миндаль иісті сары майлы тамшы болып түбіне шөкті.'}],
+ heat:{max:10,label:'Қыздыру уақыты',msg:function(t,S){var q=S.q;return t<1?'Қыздыру басталды.':q==='low'?'Температура төмен: реакция өте баяу жүріп жатыр.':q==='high'?'Температура тым жоғары: нитробензолмен бірге динитробензол да түзіледі, қоспа қоңырланып барады.':t<9.5?'Бензол қабаты азайып, қоспа сарғайып барады: нитробензол түзілуде.':'Бензол толық реакцияласты, қоспа сары түсті.'}},
+ layers:function(i,t,S){var q=S.q,f=t>0?clamp(t/(q==='high'?5:7),0,1):0,sh=q==='low'?.4*clamp(t/20,0,1)*2:f,col=q==='high'?mixc([225,205,120],[190,110,30],f):mixc([225,205,120],[235,170,40],q==='low'?f*.3:f);
+  return [{key:'h2',c:col,o:.9,h:38},{key:'hno3',c:col,o:.8,h:22},{key:'ben',c:'#e8e0b0',o:.9,h:30*(1-Math.min(sh,1))}]},
+ beaker:{name:'суық су',top:function(S){return 44},layers:function(S){var q=S.q||'good',o=S.out[0];return [{c:'#e6b800',o:.95,h:(q==='good'?14:q==='low'?4:12)*o},{c:'#7fc4e0',o:.6,h:44}]}}
+});
+$('#'+nsc.id+'bt').oninput=function(){$('#'+nsc.id+'bo').textContent=this.value+' °C'};
+
+/* ======================= 5-тәжірибе: сульфирлеу ======================= */
+scene('e5',{aria:'Бензол мен толуолды сульфирлеу: реагенттерді құю',
+ tubes:[{name:'1 · бензол'},{name:'2 · толуол'}],
+ bottles:[{id:'ben',label:'Бензол',c:'#e8e0b0'},{id:'tol',label:'Толуол',c:'#ecdca0'},{id:'h2',label:'H₂SO₄',c:'#d9d0a0'}],
+ intro:'Сөреде реагенттер тұр. «Келесі әрекет» батырмасын бас.',
+ steps:[
+  {label:'0,5 мл бензолды 1-пробиркаға құю',type:'pour',bottle:'ben',tubes:[0],key:'org',msg:'Бензол 1-пробиркаға құйылды.'},
+  {label:'0,5 мл толуолды 2-пробиркаға құю',type:'pour',bottle:'tol',tubes:[1],key:'org',msg:'Толуол 2-пробиркаға құйылды.'},
+  {label:'2 мл-ден күкірт қышқылын екі пробиркаға құю',type:'pour',bottle:'h2',tubes:[0,1],key:'h2',msg:'Күкірт қышқылы органикалық қабаттың астына орналасты.'},
+  {label:'Пробиркаларды ауа мұздатқышы бар тығындармен жабу',type:'stopper',msg:'Пробиркалар жабылды.'},
+  {label:'Пробиркаларды қайнап тұрған су моншасына салу',type:'bath',mode:'boil',msg:'Пробиркалар қайнаған моншада. Үздіксіз араластыра отырып 10–15 минут қыздыр.'},
+  {label:'Салқындатып, 20 мл суы бар стақанға құю',type:'beaker',tubes:[0,1],needHeat:12,msg:'Бензол су бетіне қалқып шықты, себебі күкірт қышқылымен әрекеттеспеді. Толуолдан түзілген изомерлі толуолсульфоқышқылдары суда еріп кетті.'}],
+ heat:{max:15,label:'Қыздыру уақыты',msg:function(t){return t<1?'Қыздыру басталды.':t<12?'Толуол қабаты күкірт қышқылында біртіндеп ери бастады. Бензол бар пробиркада өзгеріс жоқ.':'Толуол толық ерді. Бензол қабаты өзгерген жоқ.'}},
+ layers:function(i,t){var k=i===1?clamp(t/12,0,1):0;return [{key:'h2',c:'#d9d0a0',o:.85,h:56+8*k},{key:'org',c:i===0?'#e8e0b0':'#ecdca0',o:.92,h:30*(1-k)}]},
+ beaker:{name:'20 мл су',top:function(S){return 44+12*S.out[0]},layers:function(S){var t1=S.out[1];return [{c:mixc([127,196,224],[214,190,110],t1),o:.65,h:44},{c:'#e8e0b0',o:.95,h:12*S.out[0]}]}}
+});
+
+quiz('quiz3','3',[
+ {q:'Лабораторияда бензолды қандай заттан алады?',o:['Натрий бензоаты мен натронды әктен','Этанол мен күкірт қышқылынан','Толуол мен сулы сілтіден','Фенол мен мырыштан'],a:0,w:'Қоспаны қыздырғанда натрий бензоаты декарбоксилденіп, бензол бөлінеді.'},
+ {q:'Бензолды жандырғанда жалын қандай болады?',o:['Түссіз, күйесіз','Жарық, күйе бөлетін','Жасыл','Жалын түзілмейді'],a:1,w:'Бензолда көміртегінің үлесі жоғары, сондықтан толық жанбай күйе бөлінеді.'},
+ {q:'Неге толуол KMnO₄ ерітіндісін түссіздендіреді, ал бензол түссіздендірмейді?',o:['Метил тобы тотығып бензой қышқылы түзіледі, бензол сақинасы тотығуға төзімді','Бензол суда ериді','Толуолда қос байланыс бар','Бензол тез ұшады'],a:0,w:'Алкил радикалы тотығады, ароматты сақина тотықтырғышқа берік.'},
+ {q:'Қабылдағыш пробирканы неге мұзды суға салады?',o:['Бензол буы тез конденсацияланып жиналуы үшін','Бензол қатуы үшін','Түтік жылынбауы үшін','Су қайнауы үшін'],a:0,w:'Бензол ұшқыш зат, суыту конденсацияны жақсартады.'},
+ {q:'Қыздыру қалай жүргізіледі?',o:['Бірден қоспа бөлігін қатты қыздыру','Алдымен бүкіл пробирканы, содан соң қоспасы бар бөлігін қыздыру','Тек түбін қыздыру','Қыздырмай араластыру'],a:1,w:'Біркелкі жылыту пробирка жарылуының алдын алады.'}
+]);
+quiz('quiz4','4',[
+ {q:'Бензолды бромдағанда катализатор не болады?',o:['FeBr₃ (Fe мен Br₂-ден түзіледі)','NaOH','Мұз','KMnO₄'],a:0,w:'FeBr₃ — Льюис қышқылы. Ол бромды белсенді Br⁺ бөлшегіне айналдырады.'},
+ {q:'Лакмус қағазы неге қызарады?',o:['Реакцияда HBr бөлінеді','Бром буланады','Бензол қышқыл','Темір ериді'],a:0,w:'Орынбасу реакциясында бромбензолмен бірге бромсутек түзіледі.'},
+ {q:'Нитрлеуші қоспадағы электрофильді бөлшек қандай?',o:['Br⁺','NO₂⁺ (нитроний катионы)','H₃O⁺','Cl⁻'],a:1,w:'Азот қышқылы күкірт қышқылымен әрекеттесіп нитроний катионын түзеді.'},
+ {q:'Нитрлеуде күкірт қышқылының рөлі қандай?',o:['Нитроний катионын түзуге көмектеседі және суды байланыстырады','Тек суытады','Бензолды ерітеді','Түс береді'],a:0,w:'Ол азот қышқылына протон беріп, одан су бөлуге көмектеседі.'},
+ {q:'Нитробензол қандай болады?',o:['Ащы миндаль иісті сары майлы тамшы','Түссіз газ','Қара ұнтақ','Көк ерітінді'],a:0,w:'Ол суда ерімейді, сондықтан ыдыс түбіне шөгеді.'},
+ {q:'Бромбензолды әрі қарай бромдағанда қандай дибромбензол изомерлері түзіледі?',o:['Негізінен о- және п-','Тек м-','Тек 1,3,5-','Ешқайсысы түзілмейді'],a:0,w:'Бром атомы келесі орынбасушыны о- және п-орындарға бағыттайды.'}
+]);
+quiz('quiz5','5',[
+ {q:'Толуол бензолға қарағанда не себепті оңай сульфирленеді?',o:['Метил тобы сақинаға электрон тығыздығын беріп, оны белсендіреді','Толуол ауырырақ','Толуол суда ериді','Метил тобы сақинаны бұзады'],a:0,w:'Алкил радикалы сульфирлеу жылдамдығын арттырады.'},
+ {q:'Реакциядан кейін суға құйғанда бензол қайда болады?',o:['Су бетіне қалқып шығады','Түбіне шөгеді','Суда ериді','Түссізденеді'],a:0,w:'Бензол реакцияласпаған және судан жеңіл.'},
+ {q:'Толуолды сульфирлегенде қандай қосылыстар түзіледі?',o:['Изомерлі толуолсульфоқышқылдары','Бромтолуол','Нитротолуол','Бензой қышқылы'],a:0,w:'Олар суда жақсы ериді.'},
+ {q:'Ароматты сақинадағы орынбасу реакциясы қай механизммен жүреді?',o:['Электрофильді орынбасу (S<sub>E</sub>)','Нуклеофильді қосылу','Радикалды полимерлену','Элиминдеу'],a:0,w:'Электрофил сақинаның π-жүйесіне шабуылдайды.'},
+ {q:'Метил тобы келесі орынбасушыны қайда бағыттайды?',o:['о- және п-орындарға','Тек м-орынға','Бағыттамайды','Тек бүйір тізбекке'],a:0,w:'Метил тобы — бірінші текті орынбасушы.'}
+]);
+})();
+</script>
+</body>
+</html>
