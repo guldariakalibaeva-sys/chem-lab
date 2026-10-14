@@ -1,0 +1,444 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Айдау әдістері · виртуалды зертхана</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600&family=Fira+Sans+Condensed:wght@600;700&family=Fira+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky lab index on the left, one lab bench at a time on the right. Phones get the index as a scrolling strip. */
+:root{
+  --bg:#edf3f2; --surface:#ffffff; --surface2:#e3ecec; --ink:#12242b; --muted:#53686f; --line:#cbd8d7;
+  --accent:#0b7a85; --accent-ink:#ffffff; --accent-soft:#d3eef0;
+  --hazard:#c2410c; --hazard-soft:#fde8dc; --ok:#2b8a3e; --ok-soft:#dcf3e1; --bad:#c92a2a; --bad-soft:#fbe0e0;
+  --glass:#cfe8ee; --glassline:#5f8f9a; --water:#7fc4e0; --flame:#f08c00; --purple:#7a2a96; --bromine:#b4421a;
+  --font-body:'Fira Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-head:'Fira Sans Condensed','Fira Sans',system-ui,sans-serif;
+  --font-mono:'Fira Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1a1f; --surface:#15262d; --surface2:#1b3139; --ink:#e3eef0; --muted:#94a8af; --line:#294049;
+  --accent:#3cc3cf; --accent-ink:#06262a; --accent-soft:#123a40;
+  --hazard:#ff9a62; --hazard-soft:#3a2418; --ok:#63d27d; --ok-soft:#163a22; --bad:#ff7b7b; --bad-soft:#3d1a1a;
+  --glass:#274a55; --glassline:#6fa6b3; --water:#2f7894; --flame:#ffb02e; --purple:#b565d6; --bromine:#e0703f;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1a1f; --surface:#15262d; --surface2:#1b3139; --ink:#e3eef0; --muted:#94a8af; --line:#294049;
+  --accent:#3cc3cf; --accent-ink:#06262a; --accent-soft:#123a40;
+  --hazard:#ff9a62; --hazard-soft:#3a2418; --ok:#63d27d; --ok-soft:#163a22; --bad:#ff7b7b; --bad-soft:#3d1a1a;
+  --glass:#274a55; --glassline:#6fa6b3; --water:#2f7894; --flame:#ffb02e; --purple:#b565d6; --bromine:#e0703f;
+  color-scheme:dark}
+
+*{box-sizing:border-box}body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55;
+  padding-block:0 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input,select{font:inherit;color:inherit}
+sub,sup{line-height:0}
+.shell{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:270px minmax(0,1fr);gap:36px;padding-top:28px}
+.brand{font-family:var(--font-head);font-weight:700;font-size:22px;line-height:1.15;letter-spacing:.01em}
+.brand small{display:block;font-family:var(--font-body);font-weight:400;font-size:13px;color:var(--muted);margin-top:6px;letter-spacing:0}
+aside{min-width:0}
+.side{position:sticky;top:20px;display:flex;flex-direction:column;gap:18px}
+nav ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+nav a{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:9px 10px;border-radius:6px;text-decoration:none;color:var(--ink);border:1px solid transparent}
+nav a:hover{background:var(--surface2)}
+nav a[aria-current="true"]{background:var(--surface);border-color:var(--line);box-shadow:inset 3px 0 0 var(--accent)}
+nav .n{font-family:var(--font-head);font-weight:700;font-size:22px;color:var(--accent);line-height:1}
+nav .t{font-size:14.5px;line-height:1.25;min-width:0}
+nav .tick{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;color:transparent}
+nav .done .tick{background:var(--ok);border-color:var(--ok);color:#fff}
+.legend{font-size:12.5px;color:var(--muted)}
+main{min-width:0}
+.lab{display:flex;flex-direction:column;gap:22px}
+.lab[hidden]{display:none}
+.lab-head{display:flex;gap:18px;align-items:flex-start;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.lab-head .big{font-family:var(--font-head);font-weight:700;font-size:72px;line-height:.85;color:var(--accent)}
+.lab-head h2{margin:0;font-family:var(--font-head);font-weight:700;font-size:30px;line-height:1.15;text-wrap:balance}
+.lab-head p{margin:8px 0 0;color:var(--muted);max-width:62ch}
+.tag{display:inline-block;font-family:var(--font-mono);font-size:12px;border:1px solid var(--line);border-radius:4px;padding:1px 7px;color:var(--muted);margin-bottom:8px}
+h3{font-family:var(--font-head);font-weight:700;font-size:20px;margin:0 0 4px;text-wrap:balance}
+h4{font-family:var(--font-head);font-weight:600;font-size:16px;margin:0;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.card p{margin:0}
+.muted{color:var(--muted)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:8px 14px;cursor:pointer;font-weight:500}
+.btn:hover{background:var(--surface2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sel{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.eq{font-family:var(--font-mono);font-size:14.5px;background:var(--surface2);border-radius:6px;padding:10px 12px;overflow-x:auto;white-space:nowrap}
+.note{border-left:4px solid var(--hazard);background:var(--hazard-soft);padding:10px 14px;border-radius:0 6px 6px 0;font-size:15px}
+.note.info{border-color:var(--accent);background:var(--accent-soft)}
+.pill{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12.5px;font-weight:500;background:var(--surface2);color:var(--muted)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.warn{background:var(--hazard-soft);color:var(--hazard)}
+.simwrap{display:flex;flex-direction:column;gap:12px}
+.simwrap svg{width:100%;height:auto;max-height:420px;background:var(--surface2);border-radius:8px;display:block}
+.ctl{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.ctl label{display:flex;gap:8px;align-items:center;font-size:14.5px}
+.ctl input[type=range]{width:160px;accent-color:var(--accent)}
+.ctl select,.ctl input[type=number]{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 8px}
+.ctl input[type=number]{width:96px}
+output,.mono{font-family:var(--font-mono)}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.readout div{background:var(--surface2);border-radius:6px;padding:8px 12px}
+.readout b{display:block;font-family:var(--font-mono);font-size:20px;font-weight:500;font-variant-numeric:tabular-nums}
+.readout span{font-size:12.5px;color:var(--muted)}
+.msgs{display:flex;flex-direction:column;gap:6px;min-height:24px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--font-head);font-weight:600;letter-spacing:.03em;font-size:13px;text-transform:uppercase;color:var(--muted)}
+td.num,th.num{text-align:right}
+.hs{fill:transparent;stroke:transparent;cursor:pointer}
+.hs:hover{stroke:var(--accent);stroke-width:2;stroke-dasharray:5 4}
+.hs.found{fill:rgba(43,138,62,.18);stroke:var(--ok);stroke-width:2;stroke-dasharray:none}
+.list{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.list li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font-size:15px}
+.list li.on{background:var(--ok-soft);border-color:var(--ok)}
+.list li .dot{flex:none;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line);margin-top:2px}
+.list li.on .dot{background:var(--ok);border-color:var(--ok)}
+.q{display:flex;flex-direction:column;gap:8px;padding:14px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:0;padding-top:0}
+.q .qt{font-weight:500}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opts label{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:6px;cursor:pointer;font-size:15px}
+.opts label:hover{background:var(--surface2)}
+.opts input{margin-top:4px;accent-color:var(--accent)}
+.opts label.ok{background:var(--ok-soft);border-color:var(--ok)}
+.opts label.bad{background:var(--bad-soft);border-color:var(--bad)}
+.fb{font-size:14.5px;color:var(--muted);margin:0}
+.score{font-family:var(--font-head);font-weight:700;font-size:20px}
+details{border:1px solid var(--line);border-radius:6px;padding:10px 14px}
+details summary{cursor:pointer;font-weight:500}
+details[open] summary{margin-bottom:8px}
+.steps{counter-reset:s;list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.steps li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;padding:8px 10px;border:1px solid var(--line);border-radius:6px}
+.steps li::before{counter-increment:s;content:counter(s);font-family:var(--font-head);font-weight:700;color:var(--accent);font-size:20px;line-height:1.2}
+.steps li.cur{border-color:var(--accent);background:var(--accent-soft)}
+.steps li.done{opacity:.6}
+.bar{height:22px;border-radius:4px;background:var(--surface2);overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.legend-row{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13.5px}
+.legend-row span::before{content:"";display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:6px;background:var(--c);vertical-align:-1px}
+.flick{animation:flick .35s infinite alternate;transform-origin:50% 100%;transform-box:fill-box}
+@keyframes flick{from{transform:scaleY(.9) scaleX(1.03)}to{transform:scaleY(1.08) scaleX(.95)}}
+.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.drip{animation:drip .8s linear infinite}
+@keyframes drip{from{transform:translateY(0);opacity:1}to{transform:translateY(22px);opacity:.2}}
+.bub{animation:bub 1.4s ease-in infinite}
+@keyframes bub{from{transform:translateY(0);opacity:.7}to{transform:translateY(-40px);opacity:0}}
+.flow{stroke-dasharray:6 6;animation:flow 1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-12}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:16px;padding-top:max(14px,env(safe-area-inset-top,0px))}
+  .side{position:static}
+  nav ol{flex-direction:row;overflow-x:auto;padding-bottom:6px;gap:6px}
+  nav a{grid-template-columns:auto auto auto;flex:none;border-color:var(--line);background:var(--surface)}
+  nav .t{display:none}
+  nav .n{font-size:20px}
+  .legend{display:none}
+  .lab-head .big{font-size:48px}
+  .lab-head h2{font-size:24px}
+}
+
+.page{max-width:1180px;margin:0 auto;padding-top:28px;display:flex;flex-direction:column;gap:20px}
+.top h1{font-family:var(--font-head);font-weight:700;font-size:34px;line-height:1.1;margin:0;text-wrap:balance}
+.top p{margin:10px 0 0;color:var(--muted);max-width:70ch}
+.two{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;align-items:start}
+.stack{display:flex;flex-direction:column;gap:20px;min-width:0}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.checks label{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.checks input{margin-top:4px;accent-color:var(--accent)}
+fieldset legend{font-size:15px}
+@media (max-width:900px){.two{grid-template-columns:minmax(0,1fr)}.top h1{font-size:26px}}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="top">
+  <span class="tag">№ 3 тақырып · Виртуалды зертханалық жұмыс</span>
+  <h1>Органикалық қосылыстарды айдау әдістері</h1>
+  <p>Мақсаты: қоспа заттарды буға айналдырып, конденсациялау арқылы бір-бірінен бөліп алу. Мұнайды Вюрц колбасында фракциялап айдап, әр фракцияның көлемін өлше және құрамын есепте.</p>
+</header>
+
+<div class="two">
+  <div class="card">
+    <h3>Айдау қондырғысы</h3>
+    <svg id="d-svg" viewBox="0 0 760 400" role="img" aria-label="Айдау аспабы: Вюрц колбасы, термометр, тоңазытқыш, аллонж, қабылдағыш" style="width:100%;height:auto;background:var(--surface2);border-radius:8px">
+      <defs><clipPath id="d-clip"><circle cx="170" cy="250" r="68"/></clipPath></defs>
+      <!-- stands -->
+      <rect x="40" y="374" width="640" height="8" fill="var(--glassline)" opacity=".6"/>
+      <rect x="56" y="130" width="8" height="244" fill="var(--glassline)" opacity=".7"/>
+      <rect x="56" y="140" width="106" height="6" fill="var(--glassline)" opacity=".7"/>
+      <rect x="478" y="212" width="8" height="162" fill="var(--glassline)" opacity=".7"/>
+      <!-- heater -->
+      <rect x="95" y="326" width="150" height="30" rx="4" fill="#4c5a60"/>
+      <ellipse id="d-heat" cx="170" cy="324" rx="72" ry="9" fill="var(--flame)" opacity="0"/>
+      <g id="d-flask">
+        <rect x="160" y="96" width="20" height="82" fill="var(--glass)" stroke="var(--glassline)" stroke-width="2"/>
+        <circle cx="170" cy="250" r="70" fill="var(--glass)" stroke="var(--glassline)" stroke-width="2"/>
+        <rect id="d-liq" x="95" y="318" width="150" height="0" fill="#b88a3a" opacity=".85" clip-path="url(#d-clip)"/>
+        <g id="d-bubbles"></g>
+        <rect id="d-th" x="165" y="48" width="10" height="136" rx="2" fill="var(--surface)" stroke="var(--glassline)"/>
+        <rect id="d-hg" x="168.5" y="176" width="3" height="0" fill="var(--bad)"/>
+      </g>
+      <text id="d-tt" x="200" y="62" font-size="14" fill="var(--ink)" font-family="Fira Mono, monospace">25 °C</text>
+      <!-- side arm + condenser -->
+      <line x1="180" y1="118" x2="400" y2="178" stroke="var(--glassline)" stroke-width="9" stroke-linecap="round"/>
+      <line x1="392" y1="174" x2="592" y2="242" stroke="var(--glassline)" stroke-width="36" stroke-linecap="round"/>
+      <line x1="392" y1="174" x2="592" y2="242" stroke="var(--glass)" stroke-width="30" stroke-linecap="round"/>
+      <line id="d-water" x1="580" y1="238" x2="404" y2="178" stroke="var(--water)" stroke-width="12" stroke-linecap="round" opacity="0"/>
+      <text x="548" y="292" text-anchor="middle" font-size="12" fill="var(--muted)">су кіреді ↑</text>
+      <text x="428" y="136" text-anchor="middle" font-size="12" fill="var(--muted)">су шығады ↑</text>
+      <!-- allonge + receiver -->
+      <line x1="592" y1="242" x2="640" y2="272" stroke="var(--glassline)" stroke-width="8" stroke-linecap="round"/>
+      <circle id="d-drop" class="drip" cx="642" cy="282" r="3.5" fill="#b88a3a" opacity="0"/>
+      <rect x="624" y="272" width="64" height="104" fill="none" stroke="var(--glassline)" stroke-width="2"/>
+      <g id="d-rec"></g>
+      <!-- badges -->
+      <g font-size="12" font-weight="600" text-anchor="middle" fill="var(--accent-ink)">
+        <circle cx="96" cy="226" r="11" fill="var(--accent)"/><text x="96" y="230">1</text>
+        <circle cx="146" cy="64" r="11" fill="var(--accent)"/><text x="146" y="68">2</text>
+        <circle cx="470" cy="176" r="11" fill="var(--accent)"/><text x="470" y="180">3</text>
+        <circle cx="624" cy="248" r="11" fill="var(--accent)"/><text x="624" y="252">4</text>
+        <circle cx="708" cy="340" r="11" fill="var(--accent)"/><text x="708" y="344">5</text>
+      </g>
+    </svg>
+    <p class="muted" style="font-size:14px">1 – айдау колбасы; 2 – термометр; 3 – тоңазытқыш; 4 – аллонж; 5 – қабылдағыш (100 мл).</p>
+    <div class="readout">
+      <div><b id="r-t">25.0</b><span>термометр, °C</span></div>
+      <div><b id="r-d">0.0</b><span>айдалған, мл</span></div>
+      <div><b id="r-f">65.0</b><span>колбада, мл</span></div>
+      <div><b id="r-time">0:00</b><span>уақыт</span></div>
+      <div><b id="r-drop">0.0</b><span>тамшылау, тамшы/с</span></div>
+    </div>
+    <div class="msgs" id="d-msgs"></div>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <h3>1. Дайындық</h3>
+      <div class="ctl" style="flex-direction:column;align-items:stretch;gap:12px">
+        <label for="d-oil">Мұнай үлгісі
+          <select id="d-oil"><option value="light">Нұсқа А</option><option value="medium" selected>Нұсқа Б</option><option value="heavy">Нұсқа В</option></select></label>
+        <label for="d-vol" style="flex-wrap:wrap">Колбаға құйылған мұнай <input type="range" id="d-vol" min="40" max="90" value="65"><output id="d-vol-o">65 мл</output></label>
+        <p class="fb" id="d-vol-fb"></p>
+      </div>
+      <ul class="checks" id="d-checks">
+        <li><label for="c-asm"><input type="checkbox" id="c-asm"> Аспап солдан оңға қарай жиналып, 2 штативке бекітілді</label></li>
+        <li><label for="c-stone"><input type="checkbox" id="c-stone"> Колбаға бірнеше «қайнағыш» (жылтыратпаған фарфор кесектері) салынды</label></li>
+        <li><label for="c-vol"><input type="checkbox" id="c-vol" disabled> Колба көлемі 2/3-тен аспайтындай толтырылған</label></li>
+      </ul>
+      <fieldset class="opts" style="border:0;padding:0;margin:0"><legend class="qt" style="padding:0;margin-bottom:6px;font-weight:500">Термометр қалай орналасқан?</legend>
+        <label for="th-1"><input type="radio" name="th" id="th-1" value="1"> Көлбеу, колбаның түбіне жақын, сұйыққа батырылған</label>
+        <label for="th-2"><input type="radio" name="th" id="th-2" value="2"> Қатаң тігінен, сынап шары бүйір түтік аузынан шамамен 0,5 см төмен</label>
+        <label for="th-3"><input type="radio" name="th" id="th-3" value="3"> Колбаның мойнының жоғарғы жағында, бу жетпейтін жерде</label>
+      </fieldset>
+      <div class="row"><button class="btn" id="d-water-b" type="button">Суды қосу (төменнен жоғары)</button><span class="pill" id="d-water-s">су жоқ</span></div>
+    </div>
+
+    <div class="card">
+      <h3>2. Қыздыру</h3>
+      <div class="ctl" style="flex-direction:column;align-items:stretch;gap:12px">
+        <label for="d-pow" style="flex-wrap:wrap">Қыздыру қуаты <input type="range" id="d-pow" min="0" max="100" value="45"><output id="d-pow-o">45 %</output></label>
+        <label for="d-spd">Уақыт жылдамдығы <select id="d-spd"><option value="1">×1</option><option value="5">×5</option><option value="10" selected>×10</option><option value="30">×30</option></select></label>
+      </div>
+      <div class="row"><button class="btn primary" id="d-go" type="button" disabled>Қыздыруды бастау</button><button class="btn" id="d-stop" type="button">Айдауды аяқтау</button><button class="btn" id="d-reset" type="button">Басынан бастау</button></div>
+      <p class="fb">Колбада біркелкі баяу қайнау болуы үшін қыздыруды бақылап отыр. Тамшылау 1–2 тамшы/с болғаны дұрыс, ол үшін қуатты шамамен 30–60 % аралығында ұста. Өте тез қыздырғанда булар аса қызып кетеді.</p>
+      <div class="note"><b>Қауіпсіздік:</b> жұмысқа тек оқытушының рұқсатынан кейін кірісіңдер. Мұнай мен оның булары тез жанады, қыздырғыштың жанында ашық от болмауы керек. Аспап герметикалық жиналуы тиіс.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Лабораториялық жұмыстың нәтижелері</h3>
+  <p class="muted">Кесте айдау барысында өзі толады. Фракцияның пайыздық құрамы бастапқы мұнай көлеміне есептелген.</p>
+  <div class="tbl"><table><thead><tr><th>Фракция атауы</th><th>Айдаудың температуралық интервалы, °C</th><th class="num">Фракция көлемі, мл</th><th class="num">Фракцияның %-тік құрамы</th></tr></thead><tbody id="d-tbl"></tbody><tfoot id="d-foot"></tfoot></table></div>
+  <div class="note info" id="d-concl">Қорытынды айдау біткен соң шығады.</div>
+</div>
+
+<div class="grid2">
+  <div class="card"><h3>Реактивтер</h3><p>Мұнай (немесе этил спирті, хлороформ, бензол, ксилол, анилин).</p><h3 style="margin-top:6px">Құралдар мен ыдыстар</h3><p>Атмосфералық қысымда айдауға арналған колба (Вюрц колбасы), 2 штатив, дефлегматор, тоңазытқыш, термометр, қыздырғыш, аллонж, қабылдағыш, өлшегіш цилиндр (пробирка).</p></div>
+  <div class="card"><h3>Айдау түрлері</h3><p><b>Жай айдау</b> — қалыпты атмосфералық қысымда, компоненттердің қайнау температуралары шамамен 30 °C-қа ерекшеленгенде. <b>Су буымен айдау</b> және <b>вакуумда айдау</b> — зертханада қоспаны бөлудің басқа тәсілдері.</p></div>
+</div>
+
+<div class="card"><h3>Сұрақтар</h3><div id="quiz"></div></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+function clamp(x,a,b){return Math.max(a,Math.min(b,x))}
+function fmt(x,d){return Number(x).toFixed(d)}
+
+/* ---------- quiz ---------- */
+function quiz(rootId,items){
+  var root=$('#'+rootId),html='';
+  items.forEach(function(it,i){
+    html+='<div class="q"><p class="qt">'+(i+1)+'. '+it.q+'</p><div class="opts">';
+    it.o.forEach(function(o,j){html+='<label for="'+rootId+'-'+i+'-'+j+'"><input type="radio" name="'+rootId+'-'+i+'" id="'+rootId+'-'+i+'-'+j+'" value="'+j+'"><span>'+o+'</span></label>'});
+    html+='</div><p class="fb" hidden></p></div>';
+  });
+  html+='<div class="row" style="margin-top:6px"><button class="btn primary" type="button" id="'+rootId+'-chk">Тексеру</button><button class="btn" type="button" id="'+rootId+'-rst">Қайта</button><span class="score" id="'+rootId+'-sc"></span></div>';
+  root.innerHTML=html;
+  $('#'+rootId+'-chk').onclick=function(){
+    var ok=0;
+    $$('.q',root).forEach(function(q,i){
+      var sel=$('input:checked',q),fb=$('.fb',q),labs=$$('label',q);
+      labs.forEach(function(l){l.classList.remove('ok','bad')});
+      if(!sel){fb.hidden=false;fb.textContent='Жауап таңдалмады.';return}
+      var v=+sel.value;
+      if(v===items[i].a){ok++;labs[v].classList.add('ok');fb.textContent='Дұрыс. '+items[i].w}
+      else{labs[v].classList.add('bad');labs[items[i].a].classList.add('ok');fb.textContent='Дұрыс жауап басқа. '+items[i].w}
+      fb.hidden=false;
+    });
+    $('#'+rootId+'-sc').textContent=ok+' / '+items.length;
+  };
+  $('#'+rootId+'-rst').onclick=function(){
+    $$('input',root).forEach(function(x){x.checked=false});
+    $$('label',root).forEach(function(l){l.classList.remove('ok','bad')});
+    $$('.fb',root).forEach(function(f){f.hidden=true});
+    $('#'+rootId+'-sc').textContent='';
+  };
+}
+
+/* ---------- distillation model ---------- */
+var B=[70,90,120,150,280],
+ names=['Петролей эфирі','Лигроин','«Жеңіл» бензин','«Орташа» бензин','Керосин'],
+ rng=['70 дейін','70–90','90–120','120–150','150–280'],
+ cols=['#cfe9f2','#9fd0e2','#e6d680','#d9a441','#a8672a'],
+ comp={light:[10,14,24,26,20],medium:[4,8,16,24,30],heavy:[1,3,8,14,26]};
+var st,timer=null,water=false;
+function V(){return +$('#d-vol').value}
+function C(){return comp[$('#d-oil').value]}
+function total(c){return c.reduce(function(a,b){return a+b},0)}
+function cum(T,c){var a=0,lo=40;for(var i=0;i<5;i++){if(T<=lo)break;if(T>=B[i]){a+=c[i];lo=B[i]}else{a+=c[i]*(T-lo)/(B[i]-lo);break}}return a}
+function inv(p,c){var lo=40;for(var i=0;i<5;i++){if(p<=c[i])return lo+(B[i]-lo)*(c[i]?p/c[i]:0);p-=c[i];lo=B[i]}return 280}
+function idxOf(T){var k=B.findIndex(function(b){return T<b});return k<0?4:k}
+
+function reset(){
+  clearInterval(timer);timer=null;
+  st={T:25,d:0,col:[0,0,0,0,0],run:false,fin:false,tt:0,dps:0,lost:0};
+  $('#d-go').textContent='Қыздыруды бастау';
+  $('#d-concl').textContent='Қорытынды айдау біткен соң шығады.';
+  readyCheck();draw();table();messages();
+}
+function ready(){
+  return $('#c-asm').checked&&$('#c-stone').checked&&V()<=66&&$('#th-2').checked&&water;
+}
+function readyCheck(){
+  var okVol=V()<=66;
+  $('#c-vol').checked=okVol;
+  $('#d-vol-fb').textContent=okVol?'':'Колба сыйымдылығының 2/3-інен артық толтыруға болмайды. Қайнағанда сұйық шашырайды.';
+  $('#d-go').disabled=!ready()&&!st.run;
+}
+function finish(){
+  st.run=false;st.fin=true;clearInterval(timer);timer=null;
+  $('#d-go').textContent='Қыздыруды бастау';
+  var v=V(),light=(st.col[0]+st.col[1]+st.col[2])/v*100,k=light>=40?'жеңіл':light>=20?'орташа':'ауыр';
+  $('#d-concl').innerHTML='Төмен қайнайтын (120 °C-қа дейін) фракциялар бастапқы көлемнің <b>'+fmt(light,0)+' %</b> құрады. Қорытынды: бұл <b>'+k+'</b> мұнай.'+(st.lost>0.5?' Тоңазытқышқа су берілмей қалған кезде '+fmt(st.lost,1)+' мл бу жоғалды.':'');
+  messages();draw();table();
+}
+function tick(){
+  if(!st.run)return;
+  var spd=+$('#d-spd').value,dt=.1*spd,P=+$('#d-pow').value,c=C(),v=V(),maxd=v*total(c)/100;
+  st.tt+=dt;
+  var dv=0;
+  if(st.d<=0&&st.T<40){st.T+=0.02*P*dt;st.dps=0}
+  else if(st.d<maxd-1e-6){
+    dv=Math.min(P*0.0022*dt,maxd-st.d);st.d+=dv;st.T=inv(st.d/v*100,c);st.dps=dv/dt/0.05;
+  }else{st.T+=0.02*Math.max(P,5)*dt;st.dps=0;if(st.T>=280){st.T=280;finish();return}}
+  if(dv>0){
+    var i=idxOf(st.T),eff=dv;
+    if(!water){st.lost+=dv*.4;eff=dv*.6}
+    if(st.dps>4){var sm=eff*.25;st.col[i]+=eff-sm;st.col[Math.min(i+1,4)]+=sm}else st.col[i]+=eff;
+  }
+  draw();table();messages();
+}
+function messages(){
+  var m=[],P=+$('#d-pow').value;
+  if(st.run&&P<12)m.push(['bad','Қыздыру әлсіз: айдау өте баяу жүреді.']);
+  if(st.dps>4)m.push(['bad','Тамшылау тым жылдам: булар аса қызып, фракциялар араласып жатыр. Қуатты азайт.']);
+  else if(st.dps>3)m.push(['warn','Тамшылау жылдамдау. Қуатты сәл азайт.']);
+  if(!water&&(st.run||st.d>0))m.push(['bad','Тоңазытқышқа су берілмеген: бу конденсацияланбай жоғалып жатыр.']);
+  if(st.fin)m.push(['ok','Айдау аяқталды. Нәтижелер кестеде.']);
+  else if(!st.run&&!ready())m.push(['warn','Қыздыруды бастау үшін дайындық тізімін толық орында: аспап, қайнағыш, колба көлемі, термометр орны және су.']);
+  $('#d-msgs').innerHTML=m.map(function(x){return '<span class="pill '+x[0]+'" style="border-radius:6px;padding:4px 10px">'+x[1]+'</span>'}).join('');
+}
+function draw(){
+  var v=V(),remain=Math.max(v-st.d,0),hh=clamp(remain/100,0,1)*136;
+  $('#d-liq').setAttribute('y',318-hh);$('#d-liq').setAttribute('height',hh);
+  var mh=clamp((st.T-20)/280,0,1)*128;
+  $('#d-hg').setAttribute('y',176-mh);$('#d-hg').setAttribute('height',mh+2);
+  $('#d-tt').textContent=Math.round(st.T)+' °C';
+  var P=+$('#d-pow').value;$('#d-heat').setAttribute('opacity',st.run?(.15+P/140):0);
+  $('#d-water').setAttribute('opacity',water?.75:0);$('#d-water').setAttribute('class',water?'flow':'');
+  $('#d-drop').setAttribute('opacity',st.run&&st.dps>0?1:0);
+  var y=376,g='';st.col.forEach(function(c,i){var h=c*1.04;y-=h;g+='<rect x="626" y="'+y+'" width="60" height="'+Math.max(h,0)+'" fill="'+cols[i]+'"/>'});
+  $('#d-rec').innerHTML=g;
+  var b='';if(st.run&&st.T>45){for(var k=0;k<5;k++)b+='<circle class="bub" style="animation-delay:'+(k*.25)+'s" cx="'+(135+k*18)+'" cy="300" r="3" fill="#fff"/>'}
+  $('#d-bubbles').innerHTML=b;
+  var tot=st.col.reduce(function(a,b){return a+b},0),mm=Math.floor(st.tt/60),ss=Math.floor(st.tt%60);
+  $('#r-t').textContent=fmt(st.T,1);$('#r-d').textContent=fmt(tot,1);$('#r-f').textContent=fmt(remain,1);
+  $('#r-time').textContent=mm+':'+(ss<10?'0':'')+ss;$('#r-drop').textContent=fmt(st.dps,1);
+}
+function table(){
+  var v=V(),h='';
+  st.col.forEach(function(c,i){h+='<tr><td><span style="display:inline-block;width:11px;height:11px;border-radius:2px;background:'+cols[i]+';margin-right:8px"></span>'+names[i]+'</td><td>'+rng[i]+'</td><td class="num">'+fmt(c,1)+'</td><td class="num">'+fmt(c/v*100,1)+'</td></tr>'});
+  var res=Math.max(v-st.d,0);
+  h+='<tr><td>Қалдық (колбада)</td><td>280-нен жоғары</td><td class="num">'+fmt(res,1)+'</td><td class="num">'+fmt(res/v*100,1)+'</td></tr>';
+  $('#d-tbl').innerHTML=h;
+}
+
+/* ---------- controls ---------- */
+['c-asm','c-stone'].forEach(function(i){$('#'+i).onchange=function(){readyCheck();messages()}});
+$$('input[name=th]').forEach(function(r){r.onchange=function(){
+  readyCheck();messages();
+  if(r.value!=='2'&&r.checked)$('#d-vol-fb').textContent='Термометр дұрыс орналаспаған: көрсеткіші бу температурасын көрсетпейді. Шары бүйір түтік аузынан шамамен 0,5 см төмен тұруы керек.';
+  else readyCheck();
+}});
+$('#d-water-b').onclick=function(){
+  water=!water;$('#d-water-b').textContent=water?'Суды өшіру':'Суды қосу (төменнен жоғары)';
+  $('#d-water-s').textContent=water?'су жүріп тұр':'су жоқ';$('#d-water-s').className='pill '+(water?'ok':'');
+  readyCheck();draw();messages();
+};
+$('#d-vol').oninput=function(){$('#d-vol-o').textContent=this.value+' мл';if(!st.run&&st.d===0){readyCheck();draw();table();messages()}};
+$('#d-oil').onchange=function(){if(!st.run)reset()};
+$('#d-pow').oninput=function(){$('#d-pow-o').textContent=this.value+' %';messages();draw()};
+$('#d-go').onclick=function(){
+  if(st.fin)reset();
+  if(!st.run&&!ready())return;
+  st.run=!st.run;$('#d-go').textContent=st.run?'Үзіліс':'Жалғастыру';
+  if(st.run&&!timer)timer=setInterval(tick,100);
+  if(!st.run){clearInterval(timer);timer=null}
+  draw();messages();
+};
+$('#d-stop').onclick=function(){if(st.d>0||st.run)finish()};
+$('#d-reset').onclick=reset;
+reset();
+
+quiz('quiz',[
+ {q:'Айдау процесі заттардың қандай қасиетіне негізделген?',o:['Тығыздығының айырмасына','Қайнау температураларының айырмасына','Түсінің айырмасына','Балқу температурасының айырмасына'],a:1,w:'Қоспадан сұйықтар қайнау температураларына қарай жеке-жеке буланып, конденсацияланады.'},
+ {q:'Атмосфералық қысымдағы жай айдау қашан қолданылады?',o:['Компоненттердің қайнау температуралары бір-бірінен шамамен 30 °C-қа ерекшеленгенде','Барлық қоспаға бірдей','Тек қатты заттарға','Тек сумен араласатын сұйықтарға'],a:0,w:'Айырма аз болса фракциялап айдау, ал жоғары қайнайтын немесе ыдырайтын заттар үшін вакуумда айдау қолданылады.'},
+ {q:'Айдау кезінде термометр қалай орналастырылады?',o:['Көлбеу, сұйыққа батырылған','Қатаң тігінен, сынап шары бүйір түтік аузынан шамамен 0,5 см төмен','Колбаның түбіне тиіп','Тығынның сыртында'],a:1,w:'Сынап шары айдалатын заттың буымен толық шайылуы керек.'},
+ {q:'Айдау кезіндегі қатты соққыларды қалай болдырмауға болады?',o:['Қайнағыш (жылтыратпаған фарфор кесектері) салып, біркелкі баяу қыздыру','Қуатты ең жоғары қою','Колбаны шайқау','Тоңазытқышты өшіру'],a:0,w:'Қайнағыштар қайнауды біркелкі етеді.'},
+ {q:'Вюрц колбасын сұйықпен қаншаға дейін толтыруға болады?',o:['Толық','Сыйымдылығының 2/3-нен аспайтындай','Жартысынан аз ғана','Тек 1/10'],a:1,w:'Артық толтырылса, қайнағанда сұйық шашырап тоңазытқышқа өтеді.'},
+ {q:'Су тоңазытқышқа қалай беріледі?',o:['Жоғарғы тесікпен кіріп, төменгімен шығады','Төменгі тесікпен кіріп, жоғарғымен шығады','Екі тесіктен де бірдей кіреді','Су берілмейді'],a:1,w:'Солай болғанда тоңазытқыштың ішкі кеңістігі су толы болып, булар жақсы суиды.'}
+]);
+})();
+
+</script>
+</body>
+</html>
+
+</body></html>
